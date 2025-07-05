@@ -63,7 +63,7 @@ components:
           type: string
           format: date-time
           description: The precise time the audit event occurred, in ISO 8601 format.
-          example: "2025-06-23T00:00:00Z"
+          example: "2025-07-04T00:00:00Z"
         correlationId:
           type: string
           format: uuid
