@@ -8,6 +8,10 @@ from fastapi import FastAPI, Request, HTTPException, status
 from jose import jwt
 from jose.exceptions import JWTError, ExpiredSignatureError
 
+# --- Caches ---
+DISCOVERY_CACHE: Dict[str, Any] = {}
+JWKS_CACHE: Dict[str, Any] = {}
+
 # --- Configuration ---
 KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://keycloak.tools.svc.cluster.local")
 KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "default")
@@ -19,14 +23,14 @@ KEYCLOAK_DISCOVERY_URL = os.getenv(
 KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "account")
 ROLE_MAPPING_FILE = os.getenv("ROLE_MAPPING_FILE", "role_mapping.yaml")
 
-# --- Caches ---
-DISCOVERY_CACHE: Dict[str, Any] = {}
-JWKS_CACHE: Dict[str, Any] = {}
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 
 # --- Logging ---
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-app_logger = logging.getLogger("forwardauth")
-app_logger.setLevel(logging.DEBUG)
+numeric_level = getattr(logging, LOG_LEVEL, logging.INFO)
+logging.basicConfig(level=numeric_level, format=LOG_FORMAT)
+app_logger = logging.getLogger("traefik_authproxy")
+app_logger.setLevel(numeric_level)
 
 # --- App Initialization ---
 app = FastAPI(
@@ -150,6 +154,7 @@ def is_public_path(path: str) -> bool:
 @app.post("/auth")
 async def authenticate(request: Request):
     forwarded_uri = request.headers.get("X-Forwarded-Uri", "/")
+    app_logger.debug(f"Received request on forwarded URI: {forwarded_uri}")
 
     if is_public_path(forwarded_uri):
         app_logger.info(f"Public access granted to: {forwarded_uri}")
