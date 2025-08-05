@@ -9,6 +9,7 @@
 /api/v1/ecommerce:
   - admin-role
   - ecommerce-role
+  - default-roles-labs64io
 
 /public: []
 /v3/api-docs: []

@@ -2,7 +2,7 @@ APP_NAME := "traefik-authproxy"
 
 LOCAL_KEYCLOAK := "http://keycloak.localhost"
 LOCAL_KEYCLOAK_DOCKER := "http://host.docker.internal:8080"
-LOCAL_CLIENT_ID := "labs64io-api-gateway"
+LOCAL_CLIENT_ID := "audit-service-client"
 LOCAL_CLIENT_SECRET := "mTEqlt1dDzcVyEOzFjBZV4X8jvEkaQnc"
 
 # build application
@@ -16,8 +16,6 @@ docker:
 run: docker
     docker run -p 8081:8081 \
       -e KEYCLOAK_DISCOVERY_URL="{{LOCAL_KEYCLOAK_DOCKER}}/realms/labs64io/.well-known/openid-configuration" \
-      -e KEYCLOAK_URL="{{LOCAL_KEYCLOAK_DOCKER}}" \
-      -e KEYCLOAK_REALM="labs64io" \
       -e KEYCLOAK_AUDIENCE="account" \
       -e ROLE_MAPPING_FILE="/home/l64user/role_mapping.yaml" \
       -v $(pwd)/sample_role_mapping.yaml:/home/l64user/role_mapping.yaml \
